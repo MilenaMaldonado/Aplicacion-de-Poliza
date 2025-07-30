@@ -1,3 +1,6 @@
+
+import 'usuarios_view.dart';
+import 'poliza_resumen_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/poliza_viewmodel.dart';
@@ -31,6 +34,37 @@ class _PolizaViewState extends State<PolizaView> {
       appBar: AppBar(
         title: const Text("Crear Póliza", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.teal,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            tooltip: 'Ver usuarios',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const UsuariosView()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.summarize),
+            tooltip: 'Resumen de pólizas',
+            onPressed: () {
+              final usuario = vm.propietario;
+              if (usuario.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PolizaResumenView(usuario: usuario),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Primero ingresa el nombre del propietario.')),
+                );
+              }
+            },
+          ),
+        ],
       ),
       // bottomNavigationBar eliminado porque UsuariosView no existe
       body: SingleChildScrollView(
