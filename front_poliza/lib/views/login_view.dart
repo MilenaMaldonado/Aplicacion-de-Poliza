@@ -57,6 +57,7 @@ class LoginView extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
+                              key: const ValueKey('btnLogin'),
                               icon: const Icon(Icons.login),
                               label: vm.isLoading
                                   ? const SizedBox(

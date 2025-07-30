@@ -1,4 +1,3 @@
-
 import 'usuarios_view.dart';
 import 'poliza_resumen_view.dart';
 import 'package:flutter/material.dart';
@@ -86,14 +85,14 @@ class _PolizaViewState extends State<PolizaView> {
             _buildInput("Propietario (Nombre Apellido)", _propietarioController, (val) {
               vm.propietario = val;
               vm.notifyListeners();
-            }),
+            }, key: const ValueKey('txtPropietario')),
             const SizedBox(height: 12),
             _buildInput("Valor del seguro", _valorController, (val) {
               final number = double.tryParse(val) ?? 0;
               vm.valorSeguroAuto = number < 0 ? 0 : number;
               if (number < 0) _valorController.text = '0';
               vm.notifyListeners();
-            }, keyboard: TextInputType.number),
+            }, keyboard: TextInputType.number, key: const ValueKey('txtValorSeguro')),
             const SizedBox(height: 12),
             Text("Modelo de auto:", style: Theme.of(context).textTheme.titleMedium),
             Row(
@@ -134,11 +133,12 @@ class _PolizaViewState extends State<PolizaView> {
               vm.accidentes = number < 0 ? 0 : number;
               if (number < 0) _accidentesController.text = '0';
               vm.notifyListeners();
-            }, keyboard: TextInputType.number),
+            }, keyboard: TextInputType.number, key: const ValueKey('txtAccidentes')),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                key: const ValueKey('btnCalcularPoliza'),
                 style: ElevatedButton.styleFrom(
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -184,9 +184,10 @@ class _PolizaViewState extends State<PolizaView> {
     );
   }
 
-  Widget _buildInput(String label, TextEditingController controller, Function(String) onChanged, {TextInputType? keyboard}) {
+  Widget _buildInput(String label, TextEditingController controller, Function(String) onChanged, {TextInputType? keyboard, Key? key}) {
     final isNumeric = keyboard == TextInputType.number;
     return TextField(
+      key: key,
       controller: controller,
       keyboardType: keyboard,
       onChanged: (val) {

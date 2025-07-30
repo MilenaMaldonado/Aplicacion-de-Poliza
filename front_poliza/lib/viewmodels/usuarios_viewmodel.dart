@@ -14,7 +14,7 @@ class UsuariosViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:9090/bdd_dto/api/propietarios'),
+        Uri.parse('http://10.0.2.2:9090/bdd_dto/api/propietarios'),
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {

@@ -16,18 +16,21 @@ import 'login_view.dart';
                 appBar: AppBar(
                   title: const Text('Lista de Usuarios'),
                   leading: IconButton(
+                    key: const ValueKey('backButton'),
                     icon: const Icon(Icons.arrow_back),
                     tooltip: 'Regresar',
                     onPressed: () => Navigator.of(context).maybePop(),
                   ),
                   actions: [
                     IconButton(
+                      key: const ValueKey('refreshButton'),
                       icon: const Icon(Icons.refresh),
                       tooltip: 'Actualizar',
                       onPressed: () => vm.fetchUsuarios(),
                     ),
                     Builder(
                       builder: (context) => IconButton(
+                        key: const ValueKey('menuButton'),
                         icon: const Icon(Icons.menu),
                         tooltip: 'Menú',
                         onPressed: () => Scaffold.of(context).openEndDrawer(),
@@ -44,6 +47,7 @@ import 'login_view.dart';
                         child: Center(child: Text('Menú', style: TextStyle(color: Colors.white, fontSize: 22))),
                       ),
                       ListTile(
+                        key: const ValueKey('logoutButton'),
                         leading: const Icon(Icons.logout),
                         title: const Text('Cerrar sesión'),
                         onTap: () {
@@ -68,6 +72,7 @@ import 'login_view.dart';
                               final u = vm.usuarios[i];
                               return Card(
                                 child: ListTile(
+                                  key: ValueKey('usuarioTile_${u.nombreCompleto}'),
                                   leading: CircleAvatar(
                                     backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
                                     child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
@@ -100,4 +105,3 @@ import 'login_view.dart';
         );
       }
     }
-

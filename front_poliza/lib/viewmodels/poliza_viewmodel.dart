@@ -12,7 +12,7 @@ class PolizaViewModel extends ChangeNotifier {
   int accidentes = 0;
   double costoTotal = 0;
 
-  final String apiUrl = "http://localhost:9090/bdd_dto/api/poliza";
+  final String apiUrl = "http://10.0.2.2:9090/bdd_dto/api/poliza";
 
   void nuevo() {
     propietario = '';

@@ -8,7 +8,7 @@ class LoginViewModel extends ChangeNotifier {
   bool isLoading = false;
   String? error;
 
-  final String apiUrl = "http://localhost:9090/bdd_dto/api/login";
+  final String apiUrl = "http://10.0.2.2:9090/bdd_dto/api/login";
 
   Future<bool> login() async {
     isLoading = true;
