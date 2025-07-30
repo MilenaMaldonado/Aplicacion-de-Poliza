@@ -15,56 +15,73 @@ class LoginView extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Iniciar sesión'),
-              backgroundColor: Colors.teal,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    key: const ValueKey('txtUsuario'),
-                    decoration: const InputDecoration(labelText: 'Usuario'),
-                    onChanged: (v) => vm.usuario = v,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    key: const ValueKey('txtPassword'),
-                    decoration: const InputDecoration(labelText: 'Contraseña'),
-                    obscureText: true,
-                    onChanged: (v) => vm.password = v,
-                  ),
-                  const SizedBox(height: 24),
-                  if (vm.error != null)
-                    Text(vm.error!, style: const TextStyle(color: Colors.red)),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      key: const ValueKey('btnLogin'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: const StadiumBorder(),
+            body: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.security_rounded, size: 60, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(height: 16),
+                          Text('Bienvenido', style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: 24),
+                          TextField(
+                            key: const ValueKey('txtUsuario'),
+                            decoration: const InputDecoration(
+                              labelText: 'Usuario',
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            onChanged: (v) => vm.usuario = v,
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            key: const ValueKey('txtPassword'),
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Contraseña',
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                            onChanged: (v) => vm.password = v,
+                          ),
+                          const SizedBox(height: 24),
+                          if (vm.error != null)
+                            Text(vm.error!, style: const TextStyle(color: Colors.red)),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.login),
+                              label: vm.isLoading
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : const Text('Ingresar'),
+                              onPressed: vm.isLoading
+                                  ? null
+                                  : () async {
+                                      final ok = await vm.login();
+                                      if (ok && context.mounted) {
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(builder: (_) => const PolizaView()),
+                                        );
+                                      }
+                                    },
+                            ),
+                          ),
+                        ],
                       ),
-                      onPressed: vm.isLoading
-                          ? null
-                          : () async {
-                              final ok = await vm.login();
-                              if (ok && context.mounted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const PolizaView(),
-                                  ),
-                                );
-                              }
-                            },
-                      child: vm.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Iniciar sesión', style: TextStyle(fontSize: 16)),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           );
