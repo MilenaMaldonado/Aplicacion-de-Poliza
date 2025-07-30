@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 class UsuariosViewModel extends ChangeNotifier {
   List<Usuario> usuarios = [];
   bool isLoading = false;
@@ -32,23 +33,23 @@ class UsuariosViewModel extends ChangeNotifier {
 
 class Usuario {
   final int id;
-  final String nombre;
-  final String apellido;
-  final String correo;
+  final String nombreCompleto;
+  final int edad;
+  final List<dynamic>? automovilIds;
 
   Usuario({
     required this.id,
-    required this.nombre,
-    required this.apellido,
-    required this.correo,
+    required this.nombreCompleto,
+    required this.edad,
+    this.automovilIds,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
       id: json['id'] ?? 0,
-      nombre: json['nombre'] ?? '',
-      apellido: json['apellido'] ?? '',
-      correo: json['correo'] ?? '',
+      nombreCompleto: json['nombreCompleto'] ?? '',
+      edad: json['edad'] ?? 0,
+      automovilIds: json['automovilIds'],
     );
   }
 }

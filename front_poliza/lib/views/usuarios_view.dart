@@ -27,9 +27,9 @@ class UsuariosView extends StatelessWidget {
                         itemBuilder: (context, i) {
                           final u = vm.usuarios[i];
                           return ListTile(
-                            leading: CircleAvatar(child: Text(u.nombre.isNotEmpty ? u.nombre[0] : '?')),
-                            title: Text('${u.nombre} ${u.apellido}'),
-                            subtitle: Text(u.correo),
+                            leading: CircleAvatar(child: Text(u.nombreCompleto.isNotEmpty ? u.nombreCompleto[0] : '?')),
+                            title: Text(u.nombreCompleto),
+                            subtitle: Text('Edad: ${u.edad}'),
                           );
                         },
                       ),
