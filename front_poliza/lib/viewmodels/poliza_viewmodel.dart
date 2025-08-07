@@ -1,78 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:front_poliza/models/poliza_model.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-//clase para cambiar de estado las poliza
+import '../models/poliza_model.dart';
+
 class PolizaViewModel extends ChangeNotifier {
-  //variables
   String propietario = '';
-  double valor = 0.0;
+  double valorSeguroAuto = 0;
   String modeloAuto = 'A';
   String edadPropietario = '18-23';
   int accidentes = 0;
-  double costoTotal = 0.0;
+  double costoTotal = 0;
 
-  // URL de la API
-  final String apiUrl = 'http://localhost:9090/api/polizas';
+  final String apiUrl = "http://10.0.2.2:9090/bdd_dto/api/poliza";
 
-  void nuevo(){
+  void nuevo() {
     propietario = '';
-    valor = 0.0;
+    valorSeguroAuto = 0;
     modeloAuto = 'A';
     edadPropietario = '18-23';
     accidentes = 0;
-    costoTotal = 0.0;
+    costoTotal = 0;
     notifyListeners();
   }
 
-  // Metodo para calcular el costo de la póliza
+  int _parseEdadPropietario(String edad) {
+    switch (edad) {
+      case '18-23':
+        return 18;
+      case '23-55':
+        return 24;
+      case '55+':
+        return 55;
+      default:
+        return 18;
+    }
+  }
+
   Future<void> calcularPoliza() async {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'propietario': propietario,
-        'valor': valor,
-        'modeloAuto': modeloAuto,
-        'edadPropietario': edadPropietario,
-        'accidentes': accidentes,
-      }),
+    final poliza = Poliza(
+      propietario: propietario,
+      modeloAuto: modeloAuto,
+      valorSeguroAuto: valorSeguroAuto,
+      edadPropietario: _parseEdadPropietario(edadPropietario),
+      accidentes: accidentes,
+      costoTotal: 0,
     );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      costoTotal = data['costoTotal'];
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(poliza.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        costoTotal = (data['costoTotal'] as num).toDouble();
+        notifyListeners();
+      } else {
+        costoTotal = 0;
+        notifyListeners();
+        throw Exception('Error al calcular la póliza: \\n${response.body}');
+      }
+    } catch (e) {
+      costoTotal = 0;
       notifyListeners();
-    } else {
-      throw Exception('No se calculo el costo');
+      rethrow;
     }
-  }
-
-
-  //a partir de aqui hizo chat, mejorar
-  //lista de uuarios
-
-  List<Poliza> _polizas = [];
-  bool _isLoading = false;
-
-  List<Poliza> get polizas => _polizas;
-  bool get isLoading => _isLoading;
-
-  Future<void> fetchPolizas() async {
-    _isLoading = true;
-    notifyListeners();
-
-    final response = await http.get(Uri.parse('http://localhost:9090/polizas'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      _polizas = data.map((json) => Poliza.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load polizas');
-    }
-
-    _isLoading = false;
-    notifyListeners();
   }
 }

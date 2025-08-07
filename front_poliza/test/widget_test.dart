@@ -7,24 +7,115 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:front_poliza/views/login_view.dart';
+import 'package:front_poliza/views/usuarios_view.dart';
+import 'package:front_poliza/views/poliza_view.dart';
+import 'package:provider/provider.dart';
+import 'package:front_poliza/viewmodels/login_viewmodel.dart';
+import 'package:front_poliza/viewmodels/usuarios_viewmodel.dart';
+import 'package:front_poliza/viewmodels/poliza_viewmodel.dart';
 
-import 'package:front_poliza/main.dart';
+// Mock ViewModel para pruebas
+class MockLoginViewModel extends LoginViewModel {
+  @override
+  Future<bool> login() async {
+    return true;
+  }
+}
+
+class MockUsuariosViewModel extends UsuariosViewModel {
+  @override
+  Future<void> fetchUsuarios() async {
+    // Simula datos de prueba
+    usuarios = [
+      Usuario(id: 1, nombreCompleto: "Juan Pérez", edad: 25, automovilIds: [1]),
+      Usuario(id: 2, nombreCompleto: "Ana López", edad: 30, automovilIds: [2, 3])
+    ];
+    notifyListeners();
+  }
+}
+
+class MockPolizaViewModel extends PolizaViewModel {
+  @override
+  Future<void> calcularPoliza() async {
+    // Simula el cálculo de una póliza
+    costoTotal = 1500.0;
+    notifyListeners();
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Pruebas de widgets de la aplicación', () {
+    testWidgets('Login view muestra campos requeridos', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider(
+            create: (_) => MockLoginViewModel(),
+            child: const LoginView(),
+          ),
+        ),
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(find.byKey(const ValueKey('txtUsuario')), findsOneWidget);
+      expect(find.byKey(const ValueKey('txtPassword')), findsOneWidget);
+      expect(find.byKey(const ValueKey('btnLogin')), findsOneWidget);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('Usuarios view muestra lista y botones', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider(
+            create: (_) => MockUsuariosViewModel(),
+            child: const UsuariosView(),
+          ),
+        ),
+      );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      // Espera a que se complete la animación y la carga
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('refreshButton')), findsOneWidget);
+      expect(find.byKey(const ValueKey('menuButton')), findsOneWidget);
+      expect(find.byKey(const ValueKey('backButton')), findsOneWidget);
+    });
+
+    testWidgets('Poliza view muestra formulario', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider(
+            create: (_) => PolizaViewModel(),
+            child: const PolizaView(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('txtPropietario')), findsOneWidget);
+      expect(find.byKey(const ValueKey('txtValorSeguro')), findsOneWidget);
+      expect(find.byKey(const ValueKey('txtAccidentes')), findsOneWidget);
+      expect(find.byKey(const ValueKey('btnCalcularPoliza')), findsOneWidget);
+    });
+
+    testWidgets('Campos de póliza aceptan entrada de datos', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider(
+            create: (_) => PolizaViewModel(),
+            child: const PolizaView(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const ValueKey('txtPropietario')), 'Juan Pérez');
+      await tester.enterText(find.byKey(const ValueKey('txtValorSeguro')), '10000');
+      await tester.enterText(find.byKey(const ValueKey('txtAccidentes')), '2');
+
+      expect(find.text('Juan Pérez'), findsOneWidget);
+      expect(find.text('10000'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+    });
   });
 }
